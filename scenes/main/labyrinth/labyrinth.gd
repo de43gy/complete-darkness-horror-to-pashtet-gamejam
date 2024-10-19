@@ -162,21 +162,16 @@ func is_path_exists(start: Vector2, end: Vector2) -> bool:
 	
 	return false
 
+# generate classic maze start
 func generate_classic_maze():
 	print("Classic maze generation started")
 	var start_time = Time.get_ticks_msec()
 	var timeout = 5000  # 5 секунд максимальное время генерации
 
-	# Начинаем с полностью заполненного лабиринта
-	for y in range(HEIGHT):
-		for x in range(WIDTH):
-			maze[y][x] = WALL
-			visited[y][x] = false
+	fill_maze_with_walls()
 
-	# Выбираем случайную начальную точку
-	var start_x = 1 + randi() % (WIDTH - 2)
-	var start_y = 1 + randi() % (HEIGHT - 2)
-	var stack = [[start_x, start_y]]
+	var start = get_random_start()
+	var stack = [start]
 	
 	while stack:
 		if Time.get_ticks_msec() - start_time > timeout:
@@ -184,25 +179,38 @@ func generate_classic_maze():
 			generate_simple_maze()
 			return
 
-		var current = stack.pop_back()
-		var x = current[0]
-		var y = current[1]
-		
-		if not visited[y][x]:
-			visited[y][x] = true
-			maze[y][x] = PATH
-			
-			var neighbors = [[-2, 0], [2, 0], [0, -2], [0, 2]]
-			neighbors.shuffle()
-			
-			for neighbor in neighbors:
-				var nx = x + neighbor[0]
-				var ny = y + neighbor[1]
-				if is_valid_position(nx, ny) and not visited[ny][nx]:
-					stack.append([nx, ny])
-					maze[y + neighbor[1]/2][x + neighbor[0]/2] = PATH
+		carve_next_path(stack)
 
 	print("Classic maze generation completed in ", Time.get_ticks_msec() - start_time, " ms")
+
+func fill_maze_with_walls():
+	for y in range(HEIGHT):
+		for x in range(WIDTH):
+			maze[y][x] = WALL
+			visited[y][x] = false
+
+func get_random_start() -> Vector2:
+	return Vector2(1 + randi() % (WIDTH - 2), 1 + randi() % (HEIGHT - 2))
+
+func carve_next_path(stack: Array):
+	var current = stack.pop_back()
+	var x = current.x
+	var y = current.y
+
+	if not visited[y][x]:
+		visited[y][x] = true
+		maze[y][x] = PATH
+		
+		var neighbors = [[-2, 0], [2, 0], [0, -2], [0, 2]]
+		neighbors.shuffle()
+
+		for neighbor in neighbors:
+			var nx = x + neighbor[0]
+			var ny = y + neighbor[1]
+			if is_valid_position(nx, ny) and not visited[ny][nx]:
+				stack.append(Vector2(nx, ny))
+				maze[y + neighbor[1] / 2][x + neighbor[0] / 2] = PATH
+# generate classic maze end
 
 func generate_simple_maze():
 	print("Generating simple maze")
