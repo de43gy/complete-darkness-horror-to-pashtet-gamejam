@@ -11,7 +11,7 @@ enum MazeType { CLASSIC, FRACTAL, CAVE, ROOMS }
 @onready var container = $LabyrinthContainer
 
 var maze = []
-var visited = []
+var visited = {}
 var collision_objects = []
 var wall_tiles: Node2D
 var player: CharacterBody2D
@@ -69,7 +69,7 @@ func ensure_path():
 
 func initialize_maze_arrays():
 	maze = []
-	visited = []
+	visited = {}
 
 	for y in range(HEIGHT):
 		var maze_row = []
@@ -120,15 +120,17 @@ func is_border_position(x: int, y: int) -> bool:
 
 func ensure_border_walls():
 	for x in range(WIDTH):
-		if Vector2(x, 0) != exit_pos:
+		if x != entrance_pos.x:
 			maze[0][x] = WALL
-		if Vector2(x, HEIGHT-1) != entrance_pos:
-			maze[HEIGHT-1][x] = WALL
+		if x != exit_pos.x:
+			maze[HEIGHT - 1][x] = WALL
+
 	for y in range(HEIGHT):
-		if Vector2(0, y) != exit_pos and Vector2(0, y) != entrance_pos:
+		if y != entrance_pos.y:
 			maze[y][0] = WALL
-		if Vector2(WIDTH-1, y) != exit_pos and Vector2(WIDTH-1, y) != entrance_pos:
-			maze[y][WIDTH-1] = WALL
+		if y != exit_pos.y:
+			maze[y][WIDTH - 1] = WALL
+
 	emit_signal("borders_ensured")
 
 func create_entrance_and_exit():
