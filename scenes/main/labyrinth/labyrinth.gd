@@ -115,14 +115,6 @@ func create_path(start: Vector2, end: Vector2):
 		else:
 			current.y += sign(end.y - current.y)
 
-func get_valid_neighbors(pos: Vector2) -> Array:
-	var neighbors = []
-	for dir in [[0,1], [1,0], [0,-1], [-1,0]]:
-		var next = Vector2(pos.x + dir[0], pos.y + dir[1])
-		if is_valid_position(next.x, next.y) and not is_border_position(next.x, next.y) and not visited.has(next):
-			neighbors.append(next)
-	return neighbors
-
 func is_border_position(x: int, y: int) -> bool:
 	return x == 0 or x == WIDTH - 1 or y == 0 or y == HEIGHT - 1
 
