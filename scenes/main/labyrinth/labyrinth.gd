@@ -68,15 +68,17 @@ func ensure_path():
 		print("Path found, length: ", path.size())
 
 func initialize_maze_arrays():
-	maze.resize(HEIGHT)
-	visited.resize(HEIGHT)
+	maze = []
+	visited = []
 
 	for y in range(HEIGHT):
-		maze[y].resize(WIDTH)
-		visited[y].resize(WIDTH)
+		var maze_row = []
+		var visited_row = []
 		for x in range(WIDTH):
-			maze[y][x] = WALL
-			visited[y][x] = false
+			maze_row.append(WALL)
+			visited_row.append(false)
+		maze.append(maze_row)
+		visited.append(visited_row)
 
 
 func find_path(start: Vector2, end: Vector2) -> Array:
@@ -439,7 +441,7 @@ func clear_maze():
 	emit_signal("maze_cleared")
 
 func _input(event):
-	if event.is_action_pressed("ui_select"):  # Пробел
+	if event.is_action_pressed("ui_select"):  # space
 		current_maze_type = (current_maze_type + 1) % MazeType.size()
 		print("Switching to maze type: " + MazeType.keys()[current_maze_type])
 		generate_maze()
