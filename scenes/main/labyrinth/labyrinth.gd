@@ -68,14 +68,16 @@ func ensure_path():
 		print("Path found, length: ", path.size())
 
 func initialize_maze_arrays():
-	maze.clear()
-	visited.clear()
+	maze.resize(HEIGHT)
+	visited.resize(HEIGHT)
+
 	for y in range(HEIGHT):
-		maze.append([])
-		visited.append([])
+		maze[y].resize(WIDTH)
+		visited[y].resize(WIDTH)
 		for x in range(WIDTH):
-			maze[y].append(WALL)
-			visited[y].append(false)
+			maze[y][x] = WALL
+			visited[y][x] = false
+
 
 func find_path(start: Vector2, end: Vector2) -> Array:
 	var queue = [start]
