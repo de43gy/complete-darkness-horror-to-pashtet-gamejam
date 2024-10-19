@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://7vhvvro5wc3n"]
+
+[ext_resource type="Script" path="res://scenes/main/labirint/labirint.gd" id="1_qtakn"]
+
+[node name="Labirint" type="Node2D"]
+script = ExtResource("1_qtakn")

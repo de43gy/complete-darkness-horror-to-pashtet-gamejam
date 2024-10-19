@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://dsq1urcace0fi"]
+
+[ext_resource type="PackedScene" uid="uid://7vhvvro5wc3n" path="res://scenes/main/labyrinth/labyrinth.tscn" id="1_tcj1k"]
+[ext_resource type="Script" path="res://scenes/main/main/main.gd" id="1_v0esx"]
+[ext_resource type="PackedScene" uid="uid://b4fh2upqcbns8" path="res://scenes/ui/user_interface/user_interface.tscn" id="2_q8ep8"]
+[ext_resource type="PackedScene" uid="uid://bi0x8gx5yrxtq" path="res://scenes/ui/message_log/message_log.tscn" id="3_o8oto"]
+
+[node name="Main" type="Node2D"]
+position = Vector2(1, 0)
+script = ExtResource("1_v0esx")
+
+[node name="Labyrinth" parent="." instance=ExtResource("1_tcj1k")]
+
+[node name="UserInterface" parent="." instance=ExtResource("2_q8ep8")]
+offset_left = 523.0
+offset_right = 563.0
+
+[node name="MessageLog" parent="." instance=ExtResource("3_o8oto")]
+offset_top = 224.0
+offset_bottom = 264.0

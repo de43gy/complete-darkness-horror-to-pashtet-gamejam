@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bi0x8gx5yrxtq"]
+
+[ext_resource type="Script" path="res://scenes/ui/message_log/message_log.gd" id="1_ej7i3"]
+[ext_resource type="Theme" uid="uid://ddlr6bpaj0gtv" path="res://resources/fonts/black_gray_theme.tres" id="2_4v8qh"]
+
+[node name="MessageLog" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_ej7i3")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("2_4v8qh")
+theme_override_colors/font_outline_color = Color(0.392157, 0.392157, 0.392157, 1)
