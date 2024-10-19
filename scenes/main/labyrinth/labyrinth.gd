@@ -39,7 +39,6 @@ func initialize_maze():
 func generate_maze():
 	initialize_arrays()
 	
-	var generation_type = ""
 	match current_maze_type:
 		MazeType.CLASSIC:
 			generate_classic_maze()
@@ -50,11 +49,10 @@ func generate_maze():
 		MazeType.ROOMS:
 			generate_rooms_maze()
 	
-	container.queue_redraw()
-	ensure_border_walls()
 	ensure_path()
+	ensure_border_walls()
+	container.queue_redraw()
 	
-	print(generation_type + " maze generation completed")
 	emit_signal("maze_generated")
 
 #logic for checking and creating a path
@@ -139,14 +137,15 @@ func ensure_border_walls():
 
 func create_entrance_and_exit():
 	var middle_x = WIDTH / 2
-	
+
 	entrance_pos = Vector2(middle_x, HEIGHT - 1)
 	maze[entrance_pos.y][entrance_pos.x] = PATH
 	maze[entrance_pos.y - 1][entrance_pos.x] = PATH
-	
+
 	exit_pos = Vector2(middle_x, 0)
 	maze[exit_pos.y][exit_pos.x] = PATH
 	maze[exit_pos.y + 1][exit_pos.x] = PATH
+
 	emit_signal("entrance_exit_created")
 	container.queue_redraw()
 
@@ -214,7 +213,7 @@ func generate_simple_maze():
 	for y in range(HEIGHT):
 		for x in range(WIDTH):
 			maze[y][x] = PATH if randf() > 0.3 else WALL
-	ensure_connectivity()
+	ensure_path()
 	print("Simple maze generation completed")
 
 func carve_path(x, y):
@@ -239,7 +238,7 @@ func generate_cave_maze():
 	for i in range(4):
 		smooth_cave()
 	
-	ensure_connectivity()
+	ensure_path()
 
 func smooth_cave():
 	var new_maze = maze.duplicate(true)
@@ -261,18 +260,6 @@ func count_neighbor_walls(x, y):
 			if maze[y + dy][x + dx] == WALL:
 				count += 1
 	return count
-
-func ensure_connectivity():
-	print("Ensuring connectivity")
-	var path = find_path(entrance_pos, exit_pos)
-	
-	if path.size() == 0:
-		print("No path found, creating one")
-		create_path(entrance_pos, exit_pos)
-		emit_signal("path_checked", "No path found. Created one.")
-	else:
-		print("Path found, length: ", path.size())
-		emit_signal("path_checked", "Path found. Length: " + str(path.size()))
 
 func generate_rooms_maze():
 	var rooms = []
