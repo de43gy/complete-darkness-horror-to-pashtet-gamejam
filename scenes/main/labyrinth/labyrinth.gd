@@ -11,7 +11,7 @@ enum MazeType { CLASSIC, FRACTAL, CAVE, ROOMS }
 @onready var container = $LabyrinthContainer
 
 var maze = []
-var visited = {}
+var visited = []
 var collision_objects = []
 var wall_tiles: Node2D
 var player: CharacterBody2D
@@ -69,7 +69,7 @@ func ensure_path():
 
 func initialize_maze_arrays():
 	maze = []
-	visited = {}
+	visited = []
 
 	for y in range(HEIGHT):
 		var maze_row = []
