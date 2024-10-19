@@ -34,10 +34,10 @@ func initialize_maze():
 	if WIDTH != container.labyrinth_width or HEIGHT != container.labyrinth_height or CELL_SIZE != container.cell_size:
 		container.update_size(WIDTH, HEIGHT, CELL_SIZE)
 	
-	initialize_arrays()
+	initialize_maze_arrays()
 
 func generate_maze():
-	initialize_arrays()
+	initialize_maze_arrays()
 	
 	match current_maze_type:
 		MazeType.CLASSIC:
@@ -67,7 +67,7 @@ func ensure_path():
 	else:
 		print("Path found, length: ", path.size())
 
-func initialize_arrays():
+func initialize_maze_arrays():
 	maze.clear()
 	visited.clear()
 	for y in range(HEIGHT):
