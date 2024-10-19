@@ -375,16 +375,14 @@ func ensure_entrance_exit_accessibility():
 		maze[exit_pos.y + 1][randi() % 2 * 2 - 1 + exit_pos.x] = PATH
 
 func create_collision_walls():
-	if collision_objects.size() == 0:
+	if collision_objects.size() != WIDTH * HEIGHT:
+		for wall in collision_objects:
+			wall.queue_free()
+		collision_objects.clear()
+
 		for y in range(HEIGHT):
 			for x in range(WIDTH):
-				var wall = StaticBody2D.new()
-				var collision = CollisionShape2D.new()
-				var shape = RectangleShape2D.new()
-				shape.size = Vector2(CELL_SIZE, CELL_SIZE)
-				collision.shape = shape
-				wall.add_child(collision)
-				wall.position = Vector2(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2)
+				var wall = create_collision_object(x, y)
 				wall_tiles.add_child(wall)
 				collision_objects.append(wall)
 
@@ -398,6 +396,16 @@ func create_collision_walls():
 			else:
 				wall.hide()
 			index += 1
+
+func create_collision_object(x: int, y: int) -> StaticBody2D:
+	var wall = StaticBody2D.new()
+	var collision = CollisionShape2D.new()
+	var shape = RectangleShape2D.new()
+	shape.size = Vector2(CELL_SIZE, CELL_SIZE)
+	collision.shape = shape
+	wall.add_child(collision)
+	wall.position = Vector2(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2)
+	return wall
 
 func spawn_player():
 	if player:
