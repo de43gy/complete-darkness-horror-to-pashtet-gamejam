@@ -12,6 +12,7 @@ enum MazeType { CLASSIC, FRACTAL, CAVE, ROOMS }
 
 var maze = []
 var visited = []
+var collision_objects = []
 var wall_tiles: Node2D
 var player: CharacterBody2D
 var player_scene = preload("res://scenes/entities/player/player.tscn")
@@ -49,18 +50,24 @@ func generate_maze():
 		MazeType.ROOMS:
 			generate_rooms_maze()
 	
-	ensure_path_exists()
-	ensure_border_walls()
 	container.queue_redraw()
-	
-	print("Maze generation algorithm completed")
-	print("Ensuring path exists...")
-	ensure_path_exists()
-	print("Ensuring border walls...")
 	ensure_border_walls()
+	ensure_path()
 	
 	print(generation_type + " maze generation completed")
 	emit_signal("maze_generated")
+
+#logic for checking and creating a path
+func ensure_path():
+	var start = entrance_pos
+	var end = exit_pos
+	var path = find_path(start, end)
+	
+	if path.size() == 0:
+		print("No path found, creating one")
+		create_path(start, end)
+	else:
+		print("Path found, length: ", path.size())
 
 func initialize_arrays():
 	maze.clear()
@@ -71,15 +78,6 @@ func initialize_arrays():
 		for x in range(WIDTH):
 			maze[y].append(WALL)
 			visited[y].append(false)
-
-func ensure_path_exists():
-	var start = Vector2(1, HEIGHT - 2)
-	var end = Vector2(WIDTH - 2, 1)
-	var path = find_path(start, end)
-	
-	if path.size() == 0:
-		print("No path found, creating one")
-		create_path(start, end)
 
 func find_path(start: Vector2, end: Vector2) -> Array:
 	var queue = [start]
@@ -377,29 +375,36 @@ func is_valid_position(x: int, y: int) -> bool:
 	return x > 0 and x < WIDTH - 1 and y > 0 and y < HEIGHT - 1
 
 func ensure_entrance_exit_accessibility():
-	# Для входа
 	if maze[entrance_pos.y - 1][entrance_pos.x - 1] == WALL and maze[entrance_pos.y - 1][entrance_pos.x + 1] == WALL:
 		maze[entrance_pos.y - 1][randi() % 2 * 2 - 1 + entrance_pos.x] = PATH
 	
-	# Для выхода
 	if maze[exit_pos.y + 1][exit_pos.x - 1] == WALL and maze[exit_pos.y + 1][exit_pos.x + 1] == WALL:
 		maze[exit_pos.y + 1][randi() % 2 * 2 - 1 + exit_pos.x] = PATH
 
 func create_collision_walls():
-	for child in wall_tiles.get_children():
-		child.queue_free()
-	
-	for y in range(HEIGHT):
-		for x in range(WIDTH):
-			if maze[y][x] == WALL:
+	if collision_objects.size() == 0:
+		for y in range(HEIGHT):
+			for x in range(WIDTH):
 				var wall = StaticBody2D.new()
 				var collision = CollisionShape2D.new()
 				var shape = RectangleShape2D.new()
 				shape.size = Vector2(CELL_SIZE, CELL_SIZE)
 				collision.shape = shape
 				wall.add_child(collision)
-				wall.position = Vector2(x * CELL_SIZE + CELL_SIZE/2, y * CELL_SIZE + CELL_SIZE/2)
+				wall.position = Vector2(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2)
 				wall_tiles.add_child(wall)
+				collision_objects.append(wall)
+
+	var index = 0
+	for y in range(HEIGHT):
+		for x in range(WIDTH):
+			var wall = collision_objects[index]
+			if maze[y][x] == WALL:
+				wall.position = Vector2(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2)
+				wall.show()
+			else:
+				wall.hide()
+			index += 1
 
 func spawn_player():
 	if player:
