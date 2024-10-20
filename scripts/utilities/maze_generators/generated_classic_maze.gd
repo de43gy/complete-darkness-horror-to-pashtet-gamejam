@@ -2,36 +2,28 @@ extends RefCounted
 
 class_name ClassicMazeGenerator
 
-var width: int
-var height: int
+var width: int = MazeConstants.WIDTH
+var height: int = MazeConstants.HEIGHT
 var maze: Array
 var visited: Array
-var timeout: int
+var timeout: int = MazeConstants.TIMEOUT
 
-const WALL = 1
-const PATH = 0
-
-func _init(_width: int, _height: int, _timeout: int, _maze: Array, _visited: Array) -> void:
-	width = _width
-	height = _height
-	timeout = _timeout
-	maze = _maze
-	visited = _visited
-
-func generate_classic_maze() -> Array:
+func generate_classic_maze() -> void:
 	print("Classic maze generation started")
 	var start_time = Time.get_ticks_msec()
+	maze = MazeArray.initialize_maze_array()
+	visited = MazeArray.visited
 	
 	var start_x = 1
 	var start_y = 1
 	var stack = [[start_x, start_y]]
 	visited[start_y][start_x] = true
-	maze[start_y][start_x] = PATH
+	maze[start_y][start_x] = MazeConstants.PATH
 
 	while stack.size() > 0:
 		if Time.get_ticks_msec() - start_time > timeout:
 			print("Classic maze generation timed out. Switching to simple generation.")
-			return []
+			return
 
 		var current = stack[-1]
 		var x = current[0]
@@ -49,13 +41,14 @@ func generate_classic_maze() -> Array:
 			var nx = next[0]
 			var ny = next[1]
 
-			maze[(y + ny) / 2][(x + nx) / 2] = PATH
+			maze[(y + ny) / 2][(x + nx) / 2] = MazeConstants.PATH
 
 			visited[ny][nx] = true
-			maze[ny][nx] = PATH
+			maze[ny][nx] = MazeConstants.PATH
 
 			stack.append([nx, ny])
 		else:
 			stack.pop_back()
-	print("Classic maze generation completed in classic_maze.gd", Time.get_ticks_msec() - start_time, " ms")
-	return maze
+	print("Classic maze generation completed in classic_maze.gd, Time = ", Time.get_ticks_msec() - start_time, " ms")
+	MazeArray.set_maze_array(maze)
+	MazeArray.visited = visited

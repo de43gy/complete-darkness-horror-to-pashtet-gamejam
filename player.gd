@@ -1,13 +1,14 @@
 extends CharacterBody2D
 
-const CELL_SIZE = 32
+class_name PlayerScene
 
 enum CellContent { WALL, EMPTY, ENTRANCE, EXIT }
 
-var maze_generator
+#var maze_generator
 
 func _ready():
-	maze_generator = get_parent()
+	#maze_generator = get_parent()
+	pass
 
 func _unhandled_input(event):
 	var direction = Vector2.ZERO
@@ -25,7 +26,7 @@ func _unhandled_input(event):
 		try_move(direction)
 
 func try_move(direction):
-	var target_pos = position + direction * CELL_SIZE
+	var target_pos = position + direction * MazeConstants.CELL_SIZE
 	var cell_content = get_cell_content(target_pos)
 	
 	match cell_content:
@@ -42,17 +43,18 @@ func try_move(direction):
 			print("Это ступеньки вверх, я от туда пришла. Я заблудилась?")
 
 func get_cell_content(pos):
-	var cell_x = int(pos.x / CELL_SIZE)
-	var cell_y = int(pos.y / CELL_SIZE)
+	var cell_x = int(pos.x / MazeConstants.CELL_SIZE)
+	var cell_y = int(pos.y / MazeConstants.CELL_SIZE)
+	var maze = MazeArray.get_maze_array()
 	
-	if cell_x < 0 or cell_x >= maze_generator.WIDTH or cell_y < 0 or cell_y >= maze_generator.HEIGHT:
+	if cell_x < 0 or cell_x >= MazeConstants.WIDTH or cell_y < 0 or cell_y >= MazeConstants.HEIGHT:
 		return CellContent.WALL
 	
-	if maze_generator.maze[cell_y][cell_x] == maze_generator.WALL:
+	if maze[cell_y][cell_x] == MazeConstants.WALL:
 		return CellContent.WALL
-	elif Vector2(cell_x, cell_y) == maze_generator.entrance_pos:
+	elif Vector2(cell_x, cell_y) == MazeConstants.entrance_pos:
 		return CellContent.ENTRANCE
-	elif Vector2(cell_x, cell_y) == maze_generator.exit_pos:
+	elif Vector2(cell_x, cell_y) == MazeConstants.exit_pos:
 		return CellContent.EXIT
 	else:
 		return CellContent.EMPTY
