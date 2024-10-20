@@ -7,6 +7,7 @@ const WALL = 1
 const PATH = 0
 
 enum MazeType { CLASSIC, FRACTAL, CAVE, ROOMS }
+var current_maze_type = MazeType.CLASSIC
 
 @onready var container = $LabyrinthContainer
 
@@ -18,7 +19,7 @@ var player: CharacterBody2D
 var player_scene = preload("res://scenes/entities/player/player.tscn")
 var entrance_pos: Vector2
 var exit_pos: Vector2
-var current_maze_type = MazeType.CLASSIC
+var timeout = 1000 #time limit for generating a complex dungeon, after which a simple one is created
 
 func _ready():
 	randomize()
@@ -26,7 +27,6 @@ func _ready():
 	add_child(wall_tiles)
 	initialize_maze()
 	generate_maze()
-	create_entrance_and_exit()
 	create_collision_walls()
 	spawn_player()
 
@@ -49,6 +49,7 @@ func generate_maze():
 		MazeType.ROOMS:
 			generate_rooms_maze()
 	
+	create_entrance_and_exit()
 	ensure_path()
 	ensure_border_walls()
 	container.queue_redraw()
@@ -63,7 +64,7 @@ func ensure_path():
 	
 	if path.size() == 0:
 		print("No path found, creating one")
-		create_path(start, end)
+		#create_bidirectional_path(start, end)
 	else:
 		print("Path found, length: ", path.size())
 
@@ -106,17 +107,57 @@ func reconstruct_path(came_from: Dictionary, end: Vector2) -> Array:
 		path.push_front(current)
 	return path
 
-func create_path(start: Vector2, end: Vector2):
-	var current = start
-	while current != end:
-		maze[current.y][current.x] = PATH
-		if randf() > 0.5:
-			current.x += sign(end.x - current.x)
-		else:
-			current.y += sign(end.y - current.y)
+func create_bidirectional_path(start: Vector2, end: Vector2):
+	var current_start = start
+	var current_end = end
 
-func is_border_position(x: int, y: int) -> bool:
-	return x == 0 or x == WIDTH - 1 or y == 0 or y == HEIGHT - 1
+	var stack_start = [current_start]
+	var stack_end = [current_end]
+
+	var visited_start = {}
+	var visited_end = {}
+
+	maze[current_start.y][current_start.x] = PATH
+	maze[current_end.y][current_end.x] = PATH
+	visited_start[current_start] = true
+	visited_end[current_end] = true
+
+	while stack_start.size() > 0 or stack_end.size() > 0:
+		if stack_start.size() > 0:
+			current_start = stack_start.pop_back()
+			var directions = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+			directions.shuffle()
+
+			for direction in directions:
+				var next_pos = current_start + Vector2(direction[0], direction[1])
+
+				if is_valid_position(next_pos.x, next_pos.y) and not visited_start.has(next_pos):
+					if maze[next_pos.y][next_pos.x] == WALL:
+						maze[next_pos.y][next_pos.x] = PATH
+
+					stack_start.append(next_pos)
+					visited_start[next_pos] = true
+
+					if visited_end.has(next_pos):
+						return
+
+		if stack_end.size() > 0:
+			current_end = stack_end.pop_back()
+			var directions = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+			directions.shuffle()
+
+			for direction in directions:
+				var next_pos = current_end + Vector2(direction[0], direction[1])
+
+				if is_valid_position(next_pos.x, next_pos.y) and not visited_end.has(next_pos):
+					if maze[next_pos.y][next_pos.x] == WALL:
+						maze[next_pos.y][next_pos.x] = PATH
+
+					stack_end.append(next_pos)
+					visited_end[next_pos] = true
+
+					if visited_start.has(next_pos):
+						return
 
 func ensure_border_walls():
 	for x in range(WIDTH):
@@ -126,12 +167,8 @@ func ensure_border_walls():
 			maze[HEIGHT - 1][x] = WALL
 
 	for y in range(HEIGHT):
-		if y != entrance_pos.y:
-			maze[y][0] = WALL
-		if y != exit_pos.y:
-			maze[y][WIDTH - 1] = WALL
-
-	emit_signal("borders_ensured")
+		maze[y][0] = WALL
+		maze[y][WIDTH - 1] = WALL
 
 func create_entrance_and_exit():
 	var middle_x = WIDTH / 2
@@ -166,42 +203,65 @@ func is_path_exists(start: Vector2, end: Vector2) -> bool:
 
 func generate_classic_maze():
 	print("Classic maze generation started")
+	var start_time = Time.get_ticks_msec()
+	
 	for y in range(HEIGHT):
 		for x in range(WIDTH):
 			maze[y][x] = WALL
 			visited[y][x] = false
 
-	var start_x = 1 + randi() % (WIDTH - 2)
-	var start_y = 1 + randi() % (HEIGHT - 2)
-	var stack = [Vector2(start_x, start_y)]
+	var start_x = 1
+	var start_y = 1
+	var stack = [[start_x, start_y]]
 	visited[start_y][start_x] = true
 	maze[start_y][start_x] = PATH
 
-	var directions = [[0, -2], [0, 2], [-2, 0], [2, 0]]
+	while stack.size() > 0:
+		if Time.get_ticks_msec() - start_time > timeout:
+			print("Classic maze generation timed out. Switching to simple generation.")
+			generate_simple_maze()
+			return
 
-	while stack:
-		var current = stack.back()
-		directions.shuffle()
-		var carved = false
+		var current = stack[-1]
+		var x = current[0]
+		var y = current[1]
 
-		for dir in directions:
-			var nx = current.x + dir[0]
-			var ny = current.y + dir[1]
+		var neighbors = []
+		for neighbor in [[-2, 0], [2, 0], [0, -2], [0, 2]]:
+			var nx = x + neighbor[0]
+			var ny = y + neighbor[1]
+			if nx > 0 and nx < WIDTH - 1 and ny > 0 and ny < HEIGHT - 1 and not visited[ny][nx]:
+				neighbors.append([nx, ny])
 
-			if is_valid_position(nx, ny) and not visited[ny][nx]:
-				visited[ny][nx] = true
-				maze[ny][nx] = PATH
-				maze[current.y + dir[1] / 2][current.x + dir[0] / 2] = PATH
-				stack.append(Vector2(nx, ny))
-				carved = true
-				break
+		if neighbors.size() > 0:
+			var next = neighbors[randi() % neighbors.size()]
+			var nx = next[0]
+			var ny = next[1]
 
-		if not carved:
+			maze[(y + ny) / 2][(x + nx) / 2] = PATH
+
+			visited[ny][nx] = true
+			maze[ny][nx] = PATH
+
+			stack.append([nx, ny])
+		else:
 			stack.pop_back()
 
-	print("Classic maze generation completed")
+	print("Classic maze generation completed in ", Time.get_ticks_msec() - start_time, " ms")
 
-func generate_simple_maze():
+func ensure_path_exists():
+	var start = entrance_pos
+	var end = exit_pos
+	var path = find_path(start, end)
+
+	if path.size() == 0:
+		print("No path found, creating one")
+		create_bidirectional_path(start, end)
+	else:
+		print("Path found, length: ", path.size())
+
+
+func generate_simple_maze() -> void:
 	print("Generating simple maze")
 	for y in range(HEIGHT):
 		for x in range(WIDTH):
@@ -396,46 +456,11 @@ func create_collision_object(x: int, y: int) -> StaticBody2D:
 
 func spawn_player():
 	if player:
-		player.queue_free()
+		player.position = Vector2(entrance_pos.x * CELL_SIZE + CELL_SIZE/2, entrance_pos.y * CELL_SIZE + CELL_SIZE/2)
+		return
 	player = player_scene.instantiate()
 	player.position = Vector2(entrance_pos.x * CELL_SIZE + CELL_SIZE/2, entrance_pos.y * CELL_SIZE + CELL_SIZE/2)
 	add_child(player)
-
-func is_cell_walkable(pos: Vector2) -> bool:
-	var cell_x = int(pos.x / CELL_SIZE)
-	var cell_y = int(pos.y / CELL_SIZE)
-	
-	if cell_x < 0 or cell_x >= WIDTH or cell_y < 0 or cell_y >= HEIGHT:
-		return false
-	
-	return maze[cell_y][cell_x] == PATH
-
-func check_and_create_path():
-	if not is_path_exists(entrance_pos, exit_pos):
-		create_path(entrance_pos, exit_pos)
-		emit_signal("path_checked", "No path found. Created one.")
-	else:
-		emit_signal("path_checked", "Path already exists.")
-
-func clear_maze():
-	print("try to clear maze")
-	for y in range(HEIGHT):
-		for x in range(WIDTH):
-			maze[y][x] = PATH
-	
-	for child in wall_tiles.get_children():
-		child.queue_free()
-	
-	if player:
-		player.queue_free()
-		player = null
-	
-	entrance_pos = Vector2.ZERO
-	exit_pos = Vector2.ZERO
-	
-	queue_redraw()
-	
-	emit_signal("maze_cleared")
 
 func _input(event):
 	if event.is_action_pressed("ui_select"):  # space

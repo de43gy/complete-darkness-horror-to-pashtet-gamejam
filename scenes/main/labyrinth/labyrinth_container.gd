@@ -7,7 +7,7 @@ extends ColorRect
 @onready var labyrinth = get_parent()
 
 #drawing a grid to make the cells visible, useful for debugging
-@export var show_grid: bool = false
+@export var show_grid: bool = true
 
 func _ready():
 	update_size()
