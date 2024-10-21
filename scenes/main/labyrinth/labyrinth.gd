@@ -87,6 +87,6 @@ func spawn_player():
 	add_child(player)
 
 func _input(event):
-	if event.is_action_pressed("ui_select"):  # space
+	if event.is_action_pressed("ui_new_key"):
 		randomize()
 		generate_maze()
