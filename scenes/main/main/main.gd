@@ -4,7 +4,10 @@ extends Node2D
 @onready var ui = $UserInterface
 @onready var message_log = $MessageLog
 
-#func _ready():
+func _ready():
+	MazeConstants.set_message_log(message_log)
+	labyrinth.spawn_player()
+
 	#ui.connect("generate_maze", labyrinth.generate_maze)
 	#ui.connect("ensure_borders", labyrinth.ensure_border_walls)
 	#ui.connect("create_entrance_exit", labyrinth.create_entrance_and_exit)

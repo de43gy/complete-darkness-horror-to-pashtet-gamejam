@@ -83,6 +83,7 @@ func spawn_player():
 		return
 	player = PlayerScene.instantiate()
 	player.position = Vector2(MazeConstants.entrance_pos.x * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2, MazeConstants.entrance_pos.y * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2)
+	
 	add_child(player)
 
 func _input(event):

@@ -2,24 +2,36 @@ extends CharacterBody2D
 
 class_name PlayerScene
 
+@onready var animated_sprite = $AnimatedSprite2D
+
+var message_log: Control = null
+
 enum CellContent { WALL, EMPTY, ENTRANCE, EXIT }
 
-#var maze_generator
-
 func _ready():
-	#maze_generator = get_parent()
-	pass
+	MazeConstants.connect("message_log_set", Callable(self, "_on_message_log_set"))
+	if MazeConstants.message_log:
+		_on_message_log_set(MazeConstants.message_log)
+
+func _on_message_log_set(log):
+	message_log = log
+	print("message_log in player = ", message_log)
 
 func _unhandled_input(event):
+	
 	var direction = Vector2.ZERO
 	
 	if event.is_action_pressed("ui_up"):
+		animated_sprite.play("walk_up")
 		direction = Vector2.UP
 	elif event.is_action_pressed("ui_down"):
+		animated_sprite.play("walk_down")
 		direction = Vector2.DOWN
 	elif event.is_action_pressed("ui_left"):
+		animated_sprite.play("walk_left")
 		direction = Vector2.LEFT
 	elif event.is_action_pressed("ui_right"):
+		animated_sprite.play("walk_right")
 		direction = Vector2.RIGHT
 	
 	if direction != Vector2.ZERO:
@@ -28,19 +40,20 @@ func _unhandled_input(event):
 func try_move(direction):
 	var target_pos = position + direction * MazeConstants.CELL_SIZE
 	var cell_content = get_cell_content(target_pos)
+	print("message_log in player = " ,message_log)
 	
 	match cell_content:
 		CellContent.WALL:
-			print("Там стена, я не могу туда пойти.")
+			message_log.log_message("Там стена, я не могу туда пойти.")
 		CellContent.EMPTY:
 			position = target_pos
-			print("Кажется там пусто, я аккуратно шагаю " + get_direction_name(direction) + ".")
+			message_log.log_message("Я аккуратно шагаю " + get_direction_name(direction) + ".")
 		CellContent.ENTRANCE:
 			position = target_pos
-			print("Я чувствую начало ступенек вниз под ногами, кажется это спуск вниз.")
+			message_log.log_message("Это ступеньки вверх,  я оттуда пришла.")
 		CellContent.EXIT:
 			position = target_pos
-			print("Это ступеньки вверх, я от туда пришла. Я заблудилась?")
+			message_log.log_message("Ступеньки под ногами, кажется это спуск вниз.")
 
 func get_cell_content(pos):
 	var cell_x = int(pos.x / MazeConstants.CELL_SIZE)

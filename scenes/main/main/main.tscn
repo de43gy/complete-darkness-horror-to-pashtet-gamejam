@@ -1,20 +1,32 @@
-[gd_scene load_steps=5 format=3 uid="uid://dsq1urcace0fi"]
+[gd_scene load_steps=6 format=3 uid="uid://dsq1urcace0fi"]
 
 [ext_resource type="PackedScene" uid="uid://7vhvvro5wc3n" path="res://scenes/main/labyrinth/labyrinth.tscn" id="1_tcj1k"]
 [ext_resource type="Script" path="res://scenes/main/main/main.gd" id="1_v0esx"]
 [ext_resource type="PackedScene" uid="uid://b4fh2upqcbns8" path="res://scenes/ui/user_interface/user_interface.tscn" id="2_q8ep8"]
 [ext_resource type="PackedScene" uid="uid://bi0x8gx5yrxtq" path="res://scenes/ui/message_log/message_log.tscn" id="3_o8oto"]
 
+[sub_resource type="Environment" id="Environment_t1xdu"]
+background_color = Color(0.454524, 0.454524, 0.454524, 1)
+ambient_light_source = 2
+
 [node name="Main" type="Node2D"]
 position = Vector2(1, 0)
 script = ExtResource("1_v0esx")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_t1xdu")
+
 [node name="Labyrinth" parent="." instance=ExtResource("1_tcj1k")]
+position = Vector2(255, 24)
 
 [node name="UserInterface" parent="." instance=ExtResource("2_q8ep8")]
-offset_left = 643.0
-offset_right = 683.0
+offset_left = 939.0
+offset_top = 28.0
+offset_right = 979.0
+offset_bottom = 68.0
 
 [node name="MessageLog" parent="." instance=ExtResource("3_o8oto")]
-offset_top = 416.0
-offset_bottom = 456.0
+offset_left = 205.0
+offset_top = 512.0
+offset_right = 945.0
+offset_bottom = 632.0
