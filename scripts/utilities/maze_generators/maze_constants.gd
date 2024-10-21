@@ -3,7 +3,7 @@ extends Node
 
 const WIDTH = 20
 const HEIGHT = 15
-const CELL_SIZE = 32
+const CELL_SIZE = 16
 const TIMEOUT = 1000
 
 const WALL = 1
@@ -20,6 +20,6 @@ var exit_pos: Vector2 = Vector2(-1, -1)
 signal message_log_set(log)
 var message_log: Control = null
 
-func set_message_log(log):
-	message_log = log
-	emit_signal("message_log_set", log)
+#func set_message_log(log):
+	#message_log = log
+	#emit_signal("message_log_set", log)

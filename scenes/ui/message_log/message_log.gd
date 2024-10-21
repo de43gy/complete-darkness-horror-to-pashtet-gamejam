@@ -1,4 +1,7 @@
 extends Control
+
+class_name MessageLog
+
 @onready var rich_text_label = $RichTextLabel
 var new_font = preload("res://resources/fonts/Zelda DXTT (BRK) RUS by SubRaiN Regular.ttf")
 const MAX_LINES = 6

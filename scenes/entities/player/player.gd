@@ -4,14 +4,16 @@ class_name PlayerScene
 
 @onready var animated_sprite = $AnimatedSprite2D
 
-var message_log: Control = null
+var message_log: MessageLog
 
 enum CellContent { WALL, EMPTY, ENTRANCE, EXIT }
 
 func _ready():
-	MazeConstants.connect("message_log_set", Callable(self, "_on_message_log_set"))
-	if MazeConstants.message_log:
-		_on_message_log_set(MazeConstants.message_log)
+	var game_elements = get_tree().get_nodes_in_group("game_elements")
+	for elements in game_elements:
+		if elements is MessageLog:
+			message_log = elements
+			print(message_log)
 
 func _on_message_log_set(log):
 	message_log = log

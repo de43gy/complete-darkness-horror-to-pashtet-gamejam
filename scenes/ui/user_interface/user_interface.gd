@@ -1,5 +1,7 @@
 extends Control
 
+class_name UserInterface
+
 signal generate_maze
 signal ensure_borders
 signal create_entrance_exit

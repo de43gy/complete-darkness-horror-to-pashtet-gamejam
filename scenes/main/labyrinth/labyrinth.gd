@@ -1,5 +1,7 @@
 extends Node2D
 
+class_name Labyrinth
+
 @onready var LabyrinthContainer := $LabyrinthContainer
 
 var ClassicMazeGenerator = preload("res://scripts/utilities/maze_generators/generated_classic_maze.gd")
@@ -78,10 +80,9 @@ func create_collision_object(x: int, y: int) -> StaticBody2D:
 	return wall
 
 func spawn_player():
-	if player:
-		player.position = Vector2(MazeConstants.entrance_pos.x * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2, MazeConstants.entrance_pos.y * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2)
-		return
-	player = PlayerScene.instantiate()
+	if player == null:
+		player = PlayerScene.instantiate()
+	
 	player.position = Vector2(MazeConstants.entrance_pos.x * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2, MazeConstants.entrance_pos.y * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2)
 	
 	add_child(player)

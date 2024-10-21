@@ -7,9 +7,10 @@
 script = ExtResource("1_gf0v0")
 
 [node name="LabyrinthContainer" type="ColorRect" parent="."]
-custom_minimum_size = Vector2(640, 480)
+custom_minimum_size = Vector2(320, 240)
 offset_right = 40.0
 offset_bottom = 40.0
 color = Color(0, 0, 0, 1)
 script = ExtResource("3_5xhwg")
+cell_size = 16
 show_grid = false
