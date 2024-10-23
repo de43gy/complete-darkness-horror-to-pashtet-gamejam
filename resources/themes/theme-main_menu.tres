@@ -1,0 +1,38 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://li0igb4tcl4r"]
+
+[ext_resource type="StyleBox" uid="uid://ciuqjksrt7c8c" path="res://resources/themes/style_box_flat-main_menu.tres" id="2_8wmbk"]
+[ext_resource type="FontVariation" uid="uid://dtsq11aip05cv" path="res://assets/zelda_font_variation.tres" id="2_ne8s1"]
+[ext_resource type="StyleBox" uid="uid://rudd6rn2qm3y" path="res://resources/themes/style_box_flat-hover_button_main_menu.tres" id="3_xidfy"]
+[ext_resource type="StyleBox" uid="uid://bp5f3pgpu56rv" path="res://resources/themes/style_box_flat_panel_background.tres" id="4_mift1"]
+
+[resource]
+default_base_scale = 20.0
+default_font = ExtResource("2_ne8s1")
+default_font_size = 20
+Button/colors/font_color = Color(0.687216, 0.687215, 0.687215, 1)
+Button/colors/font_disabled_color = Color(0.875, 0.875, 0.875, 0.5)
+Button/colors/font_focus_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_disabled_color = Color(1, 1, 1, 0.4)
+Button/colors/icon_focus_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_normal_color = Color(1, 1, 1, 1)
+Button/colors/icon_pressed_color = Color(1, 1, 1, 1)
+Button/font_sizes/font_size = 20
+Button/fonts/font = ExtResource("2_ne8s1")
+Button/styles/disabled = ExtResource("2_8wmbk")
+Button/styles/focus = ExtResource("3_xidfy")
+Button/styles/hover = ExtResource("3_xidfy")
+Button/styles/normal = ExtResource("2_8wmbk")
+Button/styles/pressed = ExtResource("3_xidfy")
+Label/font_sizes/font_size = 30
+Label/fonts/font = ExtResource("2_ne8s1")
+Label/styles/normal = null
+MarginContainer/constants/margin_bottom = 100
+MarginContainer/constants/margin_top = 100
+PanelContainer/styles/panel = ExtResource("4_mift1")
+VBoxContainer/constants/separation = 20

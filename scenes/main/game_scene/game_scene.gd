@@ -1,5 +1,7 @@
 extends Control
 
+class_name GameScene
+
 @onready var labyrinth: Labyrinth
 @onready var ui: UserInterface
 @onready var message_log: MessageLog

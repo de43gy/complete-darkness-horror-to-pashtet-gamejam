@@ -1,6 +1,0 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ddlr6bpaj0gtv"]
-
-[ext_resource type="FontFile" uid="uid://c4ysy2ncnu20m" path="res://resources/fonts/Zelda DXTT (BRK) RUS by SubRaiN Regular.ttf" id="1_xmmnm"]
-
-[resource]
-default_font = ExtResource("1_xmmnm")

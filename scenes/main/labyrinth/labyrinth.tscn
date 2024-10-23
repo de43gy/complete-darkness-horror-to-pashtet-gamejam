@@ -8,9 +8,20 @@ script = ExtResource("1_gf0v0")
 
 [node name="LabyrinthContainer" type="ColorRect" parent="."]
 custom_minimum_size = Vector2(320, 240)
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_force_pass_scroll_events = false
 color = Color(0, 0, 0, 1)
 script = ExtResource("3_5xhwg")
-cell_size = 16
 show_grid = false

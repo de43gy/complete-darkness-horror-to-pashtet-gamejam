@@ -1,0 +1,9 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://dtsq11aip05cv"]
+
+[ext_resource type="FontFile" uid="uid://c4ysy2ncnu20m" path="res://resources/fonts/Zelda DXTT (BRK) RUS by SubRaiN Regular.ttf" id="1_e8rib"]
+
+[resource]
+base_font = ExtResource("1_e8rib")
+spacing_glyph = 4
+spacing_top = 2
+spacing_bottom = 2

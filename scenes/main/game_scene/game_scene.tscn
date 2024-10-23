@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://dsq1urcace0fi"]
+
+[ext_resource type="Script" path="res://scenes/main/game_scene/game_scene.gd" id="1_7iugo"]
+[ext_resource type="PackedScene" uid="uid://7vhvvro5wc3n" path="res://scenes/main/labyrinth/labyrinth.tscn" id="2_gryik"]
+[ext_resource type="PackedScene" uid="uid://bi0x8gx5yrxtq" path="res://scenes/ui/message_log/message_log.tscn" id="3_fguye"]
+[ext_resource type="PackedScene" uid="uid://b4fh2upqcbns8" path="res://scenes/ui/user_interface/user_interface.tscn" id="4_fu084"]
+
+[node name="GameScene" type="Control" groups=["game_scene"]]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_7iugo")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -5.0
+grow_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="Labyrinth" parent="HBoxContainer/VBoxContainer" groups=["game_elements"] instance=ExtResource("2_gryik")]
+position = Vector2(0, -172)
+
+[node name="MessageLog" parent="HBoxContainer/VBoxContainer" groups=["game_elements"] instance=ExtResource("3_fguye")]
+layout_mode = 2
+
+[node name="UserInterface" parent="HBoxContainer" instance=ExtResource("4_fu084")]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
