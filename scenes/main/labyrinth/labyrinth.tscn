@@ -3,24 +3,24 @@
 [ext_resource type="Script" path="res://scenes/main/labyrinth/labyrinth.gd" id="1_gf0v0"]
 [ext_resource type="Script" path="res://scenes/main/labyrinth/labyrinth_container.gd" id="3_5xhwg"]
 
-[node name="Labyrinth" type="Node2D"]
-script = ExtResource("1_gf0v0")
-
-[node name="LabyrinthContainer" type="ColorRect" parent="."]
+[node name="Control" type="ColorRect"]
 custom_minimum_size = Vector2(320, 240)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -120.0
-offset_right = 160.0
-offset_bottom = 120.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -480.0
+offset_bottom = -360.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
+
+[node name="Labyrinth" type="Node2D" parent="."]
+script = ExtResource("1_gf0v0")
+
+[node name="LabyrinthContainer" type="ColorRect" parent="Labyrinth"]
+custom_minimum_size = Vector2(320, 240)
+offset_right = 320.0
+offset_bottom = 240.0
+size_flags_vertical = 0
 mouse_force_pass_scroll_events = false
 color = Color(0, 0, 0, 1)
 script = ExtResource("3_5xhwg")
