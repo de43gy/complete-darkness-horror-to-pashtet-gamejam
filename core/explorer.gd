@@ -75,8 +75,9 @@ func _move_to(
 	return _result(action, outcome, direction, target, from)
 
 
-## Builds the result and remembers everything the action touched: the cell it
-## is about, the cell she left and the cell she stands on now.
+## Builds the result and remembers what the action touched: the cell it is
+## about and the cell she stands on now. The cell she left is not felt again,
+## so it ages together with everything she felt while standing on it.
 func _result(
 		action: ActionResult.Action,
 		outcome: ActionResult.Outcome,
@@ -85,6 +86,5 @@ func _result(
 		from: Vector2i,
 ) -> ActionResult:
 	_feel(about)
-	_feel(from)
 	_feel(cell)
 	return ActionResult.new(action, outcome, direction, level.get_cell(about), from, cell)

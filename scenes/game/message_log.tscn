@@ -5,9 +5,9 @@
 
 [node name="MessageLog" type="RichTextLabel"]
 clip_contents = false
-custom_minimum_size = Vector2(760, 300)
+custom_minimum_size = Vector2(760, 156)
 offset_right = 760.0
-offset_bottom = 300.0
+offset_bottom = 156.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/line_separation = 2

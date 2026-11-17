@@ -3,27 +3,32 @@ extends Control
 ## Draws a Level. Sizes itself to the level, so levels of any size work.
 ##
 ## A cell is shown in one of two ways:
-## - seen (lit): in colour. For now this is only the debug `revealed` mode;
-##   later light sources and the girl's field of view will decide it.
-## - felt: black and white, taken from `memory`, dimmer the older it is.
+## - seen (lit): the colour tile. For now this is only the debug `revealed`
+##   mode; later light sources and the girl's field of view will decide it.
+## - felt: the white contour tile, taken from `memory`, dimmer the older it is.
+##   A wall in the corner between two felt walls is drawn too, see
+##   Memory.infer_corners(). When light is added the same rule applies to it:
+##   the corner is lit only if both walls are lit, otherwise it is felt.
 ## Everything else stays black.
+##
+## Both atlases have the same layout, so a cell uses the same tile in each.
 
-## Colours of cells she can see.
-const SEEN_COLORS: Dictionary[Level.Cell, Color] = {
-	Level.Cell.WALL: Color(0.42, 0.38, 0.36),
-	Level.Cell.FLOOR: Color(0.85, 0.8, 0.7),
-	Level.Cell.ENTRANCE: Color.GREEN,
-	Level.Cell.EXIT: Color.RED,
+## Size of one tile in the atlases, in pixels.
+const TILE_SIZE: int = 16
+const SEEN_TILES: Texture2D = preload("res://assets/tiles/tiles_seen.png")
+const FELT_TILES: Texture2D = preload("res://assets/tiles/tiles_felt.png")
+## Atlas columns for each cell type; several columns are variants of one tile.
+const TILE_COLUMNS: Dictionary[Level.Cell, Array] = {
+	Level.Cell.WALL: [0, 1],
+	Level.Cell.FLOOR: [2, 3, 4],
+	Level.Cell.ENTRANCE: [5],
+	Level.Cell.EXIT: [6],
 }
-## Cells she only feels are drawn in one colour and told apart by shape, so
-## that fading with age cannot turn one kind into another: a wall is a solid
-## block, floor is an outline, stairs are an outline with a triangle.
-const FELT_COLOR: Color = Color.WHITE
 const DARKNESS_COLOR: Color = Color.BLACK
 const GRID_COLOR: Color = Color(0.5, 0.5, 0.5, 0.2)
 
 ## Pixels per cell.
-@export var cell_size: int = 16:
+@export var cell_size: int = 32:
 	set(value):
 		cell_size = maxi(value, 1)
 		_update_size()
@@ -73,10 +78,18 @@ func _draw() -> void:
 	if revealed:
 		for y: int in range(level.height):
 			for x: int in range(level.width):
-				draw_rect(_cell_rect(Vector2i(x, y)), SEEN_COLORS[level.get_cell(Vector2i(x, y))])
+				var cell: Vector2i = Vector2i(x, y)
+				draw_texture_rect_region(SEEN_TILES, _cell_rect(cell), _tile_region(cell, level.get_cell(cell)))
 	elif memory != null:
 		for cell: Vector2i in memory.get_cells():
-			_draw_felt_cell(cell, memory.get_cell(cell), memory.get_strength(cell))
+			draw_texture_rect_region(
+					FELT_TILES, _cell_rect(cell), _tile_region(cell, memory.get_cell(cell)),
+					Color(1, 1, 1, memory.get_strength(cell)))
+		var corners: Dictionary[Vector2i, float] = memory.infer_corners(level)
+		for cell: Vector2i in corners:
+			draw_texture_rect_region(
+					FELT_TILES, _cell_rect(cell), _tile_region(cell, Level.Cell.WALL),
+					Color(1, 1, 1, corners[cell]))
 
 	if revealed and show_grid:
 		for x: int in range(level.width + 1):
@@ -89,25 +102,10 @@ func _cell_rect(cell: Vector2i) -> Rect2:
 	return Rect2(Vector2(cell) * cell_size, Vector2(cell_size, cell_size))
 
 
-## Black and white picture of a cell known by touch. The triangle on stairs
-## points up for the way back and down for the way deeper.
-func _draw_felt_cell(cell: Vector2i, type: Level.Cell, strength: float) -> void:
-	var rect: Rect2 = _cell_rect(cell)
-	var color: Color = Color(FELT_COLOR, strength)
-	if type == Level.Cell.WALL:
-		draw_rect(rect, color)
-		return
-	draw_rect(rect.grow(-0.5), color, false, 1.0)
-	if type == Level.Cell.FLOOR:
-		return
-
-	var center: Vector2 = rect.get_center()
-	var half: float = cell_size * 0.25
-	var tip: float = -half if type == Level.Cell.ENTRANCE else half
-	draw_colored_polygon(
-			PackedVector2Array([
-				center + Vector2(0, tip),
-				center + Vector2(-half, -tip),
-				center + Vector2(half, -tip),
-			]),
-			color)
+## Part of the atlas holding the tile for a cell. The variant depends only on
+## the cell position, so a cell always looks the same.
+func _tile_region(cell: Vector2i, type: Level.Cell) -> Rect2:
+	var columns: Array = TILE_COLUMNS[type]
+	var variant: int = absi(cell.x * 73856093 ^ cell.y * 19349663) % columns.size()
+	var column: int = columns[variant]
+	return Rect2(column * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE)

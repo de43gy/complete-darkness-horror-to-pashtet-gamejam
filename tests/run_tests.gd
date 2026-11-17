@@ -14,6 +14,7 @@ func _ready() -> void:
 	_test_generator()
 	_test_explorer()
 	_test_memory()
+	_test_corners()
 	_test_messages()
 	print("%d checks, %d failed" % [_checks, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
@@ -137,16 +138,18 @@ func _test_memory() -> void:
 	_check(not memory.knows(Vector2i(3, 3)), "cells outside the level are not remembered")
 
 	explorer.step(Vector2i.UP)
-	_check(not memory.knows(Vector2i(2, 2)), "with duration 1 probed cells are forgotten after a move")
+	_check(memory.knows(Vector2i(2, 2)) and memory.knows(Vector2i(4, 2)), "probed walls survive one move, like the cell she left")
 	_check(memory.knows(start) and memory.knows(Vector2i(3, 1)), "after a step she knows the cell she left and the new one")
-	_check(memory.get_cells().size() == 2, "and nothing else")
+	_check(memory.get_cells().size() == 4, "and nothing else")
+	_check(memory.get_strength(Vector2i(3, 1)) > memory.get_strength(start), "what she left behind is fainter than where she stands")
+	_check(is_equal_approx(memory.get_strength(start), memory.get_strength(Vector2i(2, 2))), "the cell she left and the walls felt from it fade together")
 
 	explorer.probe(Vector2i.LEFT)
 	_check(memory.knows(start) and memory.knows(Vector2i(2, 1)), "probing after a step keeps the cell she came from")
 
 	explorer.step(Vector2i.RIGHT)
-	_check(not memory.knows(start), "the cell left two moves ago is forgotten")
-	_check(memory.knows(Vector2i(3, 1)), "the cell just left is remembered")
+	_check(not memory.knows(start) and not memory.knows(Vector2i(2, 2)), "after the second move the first cell and its walls are forgotten")
+	_check(memory.knows(Vector2i(3, 1)) and memory.knows(Vector2i(2, 1)), "the cell just left and what was felt from it are remembered")
 
 	explorer.step(Vector2i.UP)
 	_check(explorer.cell == Vector2i(4, 1) and memory.knows(Vector2i(4, 0)), "bumping into a wall remembers the wall")
@@ -167,12 +170,62 @@ func _test_memory() -> void:
 	_check(is_equal_approx(long_memory.memory.get_strength(probed), 1.0), "fresh memory has full strength")
 	long_memory.step(Vector2i.UP)
 	long_memory.step(Vector2i.RIGHT)
+	long_memory.step(Vector2i.RIGHT)
 	long_memory.probe(Vector2i.UP)
-	_check(long_memory.memory.knows(probed), "duration 3 keeps a cell for two more moves")
-	_check(is_equal_approx(long_memory.memory.get_strength(probed), 1.0 / 3.0), "old memory is weaker")
+	_check(long_memory.memory.knows(probed), "duration 3 keeps a cell for three moves")
+	_check(is_equal_approx(long_memory.memory.get_strength(probed), 0.25), "old memory is weaker")
 	long_memory.step(Vector2i.RIGHT)
 	_check(not long_memory.memory.knows(probed), "and then it is forgotten")
 	_check(Memory.new(0).duration == 1, "duration cannot go below 1")
+
+
+func _test_corners() -> void:
+	# x: 01234
+	var level: Level = Level.from_rows([
+		"#####",
+		"#...#",
+		"##S.#",
+		"###.#",
+	])
+	var explorer: Explorer = Explorer.new(level, 3)
+	var memory: Memory = explorer.memory
+	var corner: Vector2i = Vector2i(1, 3)
+
+	explorer.probe(Vector2i.LEFT)
+	_check(memory.infer_corners(level).is_empty(), "one wall gives no corner")
+	explorer.probe(Vector2i.DOWN)
+	_check(memory.infer_corners(level).has(corner), "two walls touching diagonally reveal the wall between them")
+	_check(memory.infer_corners(level).size() == 1, "the cell she stands on is not a corner")
+	_check(not memory.knows(corner), "the corner is worked out, not remembered")
+
+	explorer.step(Vector2i.UP)
+	explorer.probe(Vector2i.LEFT)
+	var corners: Dictionary[Vector2i, float] = memory.infer_corners(level)
+	_check(is_equal_approx(corners[corner], 0.75), "the corner is as faint as the fainter wall")
+	_check(not corners.has(Vector2i(1, 2)), "a wall she already knows is not a corner")
+
+	var short_memory: Explorer = Explorer.new(level)
+	short_memory.probe(Vector2i.LEFT)
+	short_memory.probe(Vector2i.DOWN)
+	short_memory.step(Vector2i.UP)
+	_check(short_memory.memory.infer_corners(level).has(corner), "the corner survives one move together with its walls")
+	short_memory.step(Vector2i.RIGHT)
+	_check(short_memory.memory.infer_corners(level).is_empty(), "the corner is gone as soon as the walls are forgotten")
+
+	# two walls touching diagonally with open floor in both corners
+	var open: Level = Level.from_rows([
+		"#####",
+		"#.#.#",
+		"##..#",
+		"##S##",
+	])
+	var open_explorer: Explorer = Explorer.new(open)
+	open_explorer.cell = Vector2i(1, 1)
+	open_explorer.probe(Vector2i.RIGHT)
+	open_explorer.cell = Vector2i(2, 2)
+	open_explorer.probe(Vector2i.LEFT)
+	_check(open_explorer.memory.knows(Vector2i(2, 1)) and open_explorer.memory.knows(Vector2i(1, 2)), "both diagonal walls are known")
+	_check(open_explorer.memory.infer_corners(open).is_empty(), "a corner that is not a wall is never shown")
 
 
 func _test_messages() -> void:

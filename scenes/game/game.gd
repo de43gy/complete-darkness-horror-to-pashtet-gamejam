@@ -13,7 +13,7 @@ const DIRECTION_ACTIONS: Dictionary[StringName, Vector2i] = {
 }
 
 @export var level_width: int = 21
-@export var level_height: int = 15
+@export var level_height: int = 13
 ## How many turns the girl remembers a cell she has touched.
 @export_range(1, 50) var memory_duration: int = 1
 ## Start with the whole level visible (debug). Toggled in game with F1.

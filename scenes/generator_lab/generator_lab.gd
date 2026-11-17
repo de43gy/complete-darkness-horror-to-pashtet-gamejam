@@ -5,7 +5,7 @@ extends Control
 ## To add a generator to the list, append it to `generators`.
 
 const MAIN_MENU_SCENE: String = "res://scenes/main_menu/main_menu.tscn"
-const MAX_CELL_SIZE: int = 16
+const MAX_CELL_SIZE: int = 32
 const MIN_CELL_SIZE: int = 2
 
 var generators: Array[LevelGenerator] = [
