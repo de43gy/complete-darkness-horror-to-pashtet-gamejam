@@ -2,11 +2,11 @@ extends Node2D
 
 class_name Labyrinth
 
-@onready var LabyrinthContainer := $LabyrinthContainer
+@onready var labyrinth_container: LabyrinthContainer = $LabyrinthContainer
 
-var ClassicMazeGenerator = preload("res://scripts/utilities/maze_generators/generated_classic_maze.gd")
-var MazeEntranceExit = preload("res://scripts/utilities/maze_generators/maze_entrance_exit.gd")
-var PlayerScene = preload("res://scenes/entities/player/player.tscn")
+var maze_generator: ClassicMazeGenerator
+var entrance_exit: MazeEntranceExit
+var player_scene: PackedScene = preload("res://scenes/entities/player/player.tscn")
 
 var collision_objects = []
 var wall_tiles: Node2D
@@ -14,35 +14,34 @@ var player: CharacterBody2D
 
 
 func _ready():
-	MazeConstants.labyrinth_container = LabyrinthContainer
-	ClassicMazeGenerator = ClassicMazeGenerator.new()
-	MazeEntranceExit = MazeEntranceExit.new()
+	MazeConstants.labyrinth_container = labyrinth_container
+	maze_generator = ClassicMazeGenerator.new()
+	entrance_exit = MazeEntranceExit.new()
 	wall_tiles = Node2D.new()
 	add_child(wall_tiles)
 	generate_maze()
 
 func generate_maze():
 	randomize()
-	ClassicMazeGenerator.generate_classic_maze()
+	maze_generator.generate_classic_maze()
 	ensure_border_walls()
-	MazeEntranceExit.create_entrance_and_exit()
+	entrance_exit.create_entrance_and_exit()
 	create_collision_walls()
 	spawn_player()
-	LabyrinthContainer.queue_redraw()
+	labyrinth_container.queue_redraw()
 
 func ensure_border_walls():
 	var maze = MazeArray.get_maze_array()
+	# the entrance and exit are carved afterwards by MazeEntranceExit
 	for x in range(MazeConstants.WIDTH):
-		if x != MazeConstants.entrance_pos.x:
-			maze[0][x] = MazeConstants.WALL
-		if x != MazeConstants.exit_pos.x:
-			maze[MazeConstants.HEIGHT - 1][x] = MazeConstants.WALL
+		maze[0][x] = MazeConstants.WALL
+		maze[MazeConstants.HEIGHT - 1][x] = MazeConstants.WALL
 
 	for y in range(MazeConstants.HEIGHT):
 		maze[y][0] = MazeConstants.WALL
 		maze[y][MazeConstants.WIDTH - 1] = MazeConstants.WALL
 	MazeArray.set_maze_array(maze)
-	LabyrinthContainer.queue_redraw()
+	labyrinth_container.queue_redraw()
 
 func create_collision_walls():
 	var maze = MazeArray.get_maze_array()
@@ -80,12 +79,12 @@ func create_collision_object(x: int, y: int) -> StaticBody2D:
 	return wall
 
 func spawn_player():
+	# the player is created once and only moved back to the entrance on regeneration
 	if player == null:
-		player = PlayerScene.instantiate()
-	
+		player = player_scene.instantiate()
+		add_child(player)
+
 	player.position = Vector2(MazeConstants.entrance_pos.x * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2, MazeConstants.entrance_pos.y * MazeConstants.CELL_SIZE + MazeConstants.CELL_SIZE/2)
-	
-	add_child(player)
 
 func _input(event):
 	if event.is_action_pressed("ui_new_key"):

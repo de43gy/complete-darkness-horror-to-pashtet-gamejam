@@ -13,7 +13,6 @@ func _ready():
 	for elements in game_elements:
 		if elements is MessageLog:
 			message_log = elements
-			print(message_log)
 
 func _on_message_log_set(log):
 	message_log = log
@@ -54,9 +53,6 @@ func try_move(direction):
 		CellContent.EMPTY:
 			position = target_pos
 			message_log.log_message("- я аккуратно шагаю " + get_direction_name(direction) + ".")
-			
-			play_animation(direction)
-		
 		CellContent.ENTRANCE:
 			position = target_pos
 			message_log.log_message("- это ступеньки вверх, я оттуда пришла.")
@@ -98,18 +94,24 @@ func jump_cell(direction):
 	if first_cell_content == CellContent.WALL:
 		message_log.log_message("- я попробовала прыгнуть, но больно ударилась о стену.")
 	elif target_cell_content == CellContent.WALL:
+		# the jump is cut short: she lands on the cell right before the wall
 		position += direction * MazeConstants.CELL_SIZE
-		message_log.log_message("- я прыгнула, но влетела в стену и осталась на месте.")
+		message_log.log_message("- я прыгнула, но влетела в стену и упала прямо перед ней.")
 	else:
-		if target_cell_content == CellContent.EMPTY:
-			position = target_pos
-			message_log.log_message("- я прыгнула " + get_direction_name(direction) + ", тут пусто.")
-		else:
-			message_log.log_message("- я прыгнула " + get_direction_name(direction) + " и влетела в стену")
+		position = target_pos
+		match target_cell_content:
+			CellContent.ENTRANCE:
+				message_log.log_message("- я прыгнула " + get_direction_name(direction) + " и приземлилась на ступеньки вверх.")
+			CellContent.EXIT:
+				message_log.log_message("- я прыгнула " + get_direction_name(direction) + " и приземлилась на ступеньки вниз.")
+			_:
+				message_log.log_message("- я прыгнула " + get_direction_name(direction) + ", тут пусто.")
 
 func get_cell_content(pos):
-	var cell_x = int(pos.x / MazeConstants.CELL_SIZE)
-	var cell_y = int(pos.y / MazeConstants.CELL_SIZE)
+	# floori, not int(): int() truncates towards zero, so a position just
+	# outside the top/left edge would be read as row/column 0
+	var cell_x = floori(pos.x / MazeConstants.CELL_SIZE)
+	var cell_y = floori(pos.y / MazeConstants.CELL_SIZE)
 	var maze = MazeArray.get_maze_array()
 
 	if cell_x < 0 or cell_x >= MazeConstants.WIDTH or cell_y < 0 or cell_y >= MazeConstants.HEIGHT:

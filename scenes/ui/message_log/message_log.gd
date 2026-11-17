@@ -19,10 +19,7 @@ func _ready():
 	font_settings.set_spacing(TextServer.SPACING_TOP, LINE_SPACING)
 	font_settings.set_spacing(TextServer.SPACING_BOTTOM, LINE_SPACING)
 	add_theme_font_override("normal_font", font_settings)
-	add_theme_font_size_override("normal_font_size", FONT_SIZE)
-	
-	font_settings = get_theme_default_font_size()
-	add_theme_font_size_override("normal_font_size", font_settings + FONT_SIZE)
+	add_theme_font_size_override("normal_font_size", get_theme_default_font_size() + FONT_SIZE)
 	
 	add_theme_constant_override("line_separation", LINE_SPACING)
 
