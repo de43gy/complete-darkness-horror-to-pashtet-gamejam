@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3 uid="uid://dsq1urcace0fi"]
+
+[ext_resource type="Script" path="res://scenes/game/game.gd" id="1_7iugo"]
+[ext_resource type="Theme" uid="uid://li0igb4tcl4r" path="res://assets/themes/main_theme.tres" id="1_proc0"]
+[ext_resource type="Script" path="res://scenes/game/level_view.gd" id="2_gryik"]
+[ext_resource type="PackedScene" uid="uid://buexmj2y32fld" path="res://scenes/game/girl.tscn" id="3_girl0"]
+[ext_resource type="PackedScene" uid="uid://bi0x8gx5yrxtq" path="res://scenes/game/message_log.tscn" id="3_fguye"]
+
+[node name="Game" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_proc0")
+script = ExtResource("1_7iugo")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="LevelView" type="Control" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+z_index = 1
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("2_gryik")
+
+[node name="Girl" parent="CenterContainer/VBoxContainer/LevelView" instance=ExtResource("3_girl0")]
+unique_name_in_owner = true
+
+[node name="MessageLog" parent="CenterContainer/VBoxContainer" instance=ExtResource("3_fguye")]
+unique_name_in_owner = true
+layout_mode = 2

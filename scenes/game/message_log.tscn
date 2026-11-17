@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bi0x8gx5yrxtq"]
+
+[ext_resource type="Script" path="res://scenes/game/message_log.gd" id="1_ej7i3"]
+[ext_resource type="FontVariation" path="res://assets/fonts/log_font.tres" id="2_logfn"]
+
+[node name="MessageLog" type="RichTextLabel"]
+clip_contents = false
+custom_minimum_size = Vector2(760, 300)
+offset_right = 760.0
+offset_bottom = 300.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/line_separation = 2
+theme_override_fonts/normal_font = ExtResource("2_logfn")
+theme_override_font_sizes/normal_font_size = 22
+scroll_active = false
+shortcut_keys_enabled = false
+script = ExtResource("1_ej7i3")

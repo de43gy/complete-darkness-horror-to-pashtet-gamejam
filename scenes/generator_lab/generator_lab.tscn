@@ -1,0 +1,114 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/generator_lab/generator_lab.gd" id="1_lab"]
+[ext_resource type="Theme" uid="uid://li0igb4tcl4r" path="res://assets/themes/main_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scenes/game/level_view.gd" id="3_view"]
+
+[node name="GeneratorLab" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_lab")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Controls" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="MarginContainer/HBoxContainer/Controls"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "ГЕНЕРАТОР"
+
+[node name="GeneratorOption" type="OptionButton" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="WidthLabel" type="Label" parent="MarginContainer/HBoxContainer/Controls"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "ШИРИНА"
+
+[node name="WidthSpinBox" type="SpinBox" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 5.0
+max_value = 201.0
+value = 21.0
+
+[node name="HeightLabel" type="Label" parent="MarginContainer/HBoxContainer/Controls"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "ВЫСОТА"
+
+[node name="HeightSpinBox" type="SpinBox" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 5.0
+max_value = 201.0
+value = 15.0
+
+[node name="SeedLabel" type="Label" parent="MarginContainer/HBoxContainer/Controls"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "ЗЕРНО"
+
+[node name="SeedSpinBox" type="SpinBox" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 4.29497e+09
+
+[node name="GenerateButton" type="Button" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "СОЗДАТЬ"
+
+[node name="RandomButton" type="Button" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "СЛУЧАЙНОЕ ЗЕРНО"
+
+[node name="GridCheckBox" type="CheckBox" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "СЕТКА"
+
+[node name="InfoLabel" type="Label" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+
+[node name="BackButton" type="Button" parent="MarginContainer/HBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "НАЗАД"
+
+[node name="ViewArea" type="CenterContainer" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LevelView" type="Control" parent="MarginContainer/HBoxContainer/ViewArea"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_view")
